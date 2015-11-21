@@ -4,6 +4,7 @@ import bundlepricing.Discounter.{EmptyCart, PartialResult}
 import bundlepricing.data.{Bundle, Dollars, Item, Quantity}
 import bundlepricing.util.{NonEmptyMap, NonEmptySet, undiscountedTotal}
 
+import scala.annotation.tailrec
 import scalaz.std.iterable
 
 /**
@@ -11,6 +12,7 @@ import scalaz.std.iterable
   * @param bundles any available bundles
   */
 case class Discounter(products: NonEmptySet[Item], bundles: Set[Bundle]) {
+  require(products.map(_.id).size == products.size) // check for conflicting prices
 
   /**
     * Apply the best combination of bundle savings to the cart
@@ -34,6 +36,7 @@ case class Discounter(products: NonEmptySet[Item], bundles: Set[Bundle]) {
     /** Remove bundle item quantities from a cart */
     def applyBundle(cartRemaining: Map[Item, Quantity], bundle: Bundle): Map[Item, Quantity] = {
       assert(canUtilizeBundle(cartRemaining, bundle))
+
       bundle.items.foldLeft(cartRemaining) {
         case (cart, (product, quantity)) =>
           if (cart(product) equiv quantity)
@@ -43,6 +46,7 @@ case class Discounter(products: NonEmptySet[Item], bundles: Set[Bundle]) {
       }
     }
 
+    @tailrec
     def loop(open: List[PartialResult], bestPrice: Dollars): Dollars = {
       open match {
         case Nil =>
@@ -84,12 +88,9 @@ case class Discounter(products: NonEmptySet[Item], bundles: Set[Bundle]) {
 }
 
 object Discounter {
-
   /** A partially-evaluated cart */
   private case class PartialResult(cartRemaining: Map[Item, Quantity], bundlesRemaining: List[Bundle], subtotal: Dollars)
 
-  /** A pattern matcher for empty Map[Product, Quantity] map */
-  private object EmptyCart {
-    def unapply(m: Map[Item, Quantity]): Boolean = m.isEmpty
-  }
+  /** Pattern matching an empty remaining cart */
+  private object EmptyCart { def unapply(m: Map[Item, Quantity]): Boolean = m.isEmpty }
 }

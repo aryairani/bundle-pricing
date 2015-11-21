@@ -9,3 +9,4 @@ libraryDependencies ++= Seq("org.specs2" %% "specs2-core" % "3.6.5" % "test")
 libraryDependencies ++= Seq("org.specs2" %% "specs2-scalacheck" % "3.6.5" % "test")
 scalacOptions in Test ++= Seq("-Yrangepos")
 
+scalacOptions ++= Seq("-feature","-language:higherKinds")

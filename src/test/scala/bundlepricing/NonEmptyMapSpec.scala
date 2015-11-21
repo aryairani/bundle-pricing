@@ -5,28 +5,41 @@ import bundlepricing.util.NonEmptyMap
 import org.scalacheck.{Arbitrary, Gen}
 import org.specs2.{ScalaCheck, Specification}
 
+import scalaz.{Foldable1, NonEmptyList}
 import scalaz.scalacheck.ScalazProperties
 import scalaz.std.AllInstances._
+import scalaz.syntax.std.list._
 
 class NonEmptyMapSpec extends Specification with ScalaCheck {
   def is = s2"""
     Semigroup laws ${ ScalazProperties.semigroup.laws[NonEmptyMap[Int, Int]] }
-    deleting the only element leaves nothing ${ prop((k: Int, v: Int) => (NonEmptyMap(k -> v) - k).isEmpty) }
-    deleting some elements leaves somthing ${
+    removing the only element leaves nothing ${ prop((k: Int, v: Int) => (NonEmptyMap(k -> v) - k).isEmpty) }
+    removing 2nd elements leaves something ${
       prop((k1: Int, v1: Int, k2: Int, v2: Int) =>
-        (NonEmptyMap(k1 -> v1, k2 -> v2) - k1).isEmpty === (k1 == k2)) }
-    deleting some elements leaves somthing ${
+        (NonEmptyMap(k1 -> v1, k2 -> v2) - k1).isEmpty === (k1 == k2))
+    }
+    removing non-member element leaves something ${
       prop((k1: Int, v1: Int, k2: Int) =>
-        (NonEmptyMap(k1 -> v1) - k2).isEmpty === (k1 == k2)) }
+        (NonEmptyMap(k1 -> v1) - k2).isEmpty === (k1 == k2))
+    }
+    foldMap1 consistent with NonEmptyList ${
+      prop((m: NonEmptyMap[Int,String]) =>
+        m.foldMap1(Vector(_)) === Foldable1[NonEmptyList].foldMap1(m.toNEL)(Vector(_))
+      )
+    }
+    ++(NonEmptyMap) ${ prop((a: NonEmptyMap[Int,String], b: NonEmptyMap[Int,String]) => (a ++ b).toMap === (a.toMap ++ b.toMap)) }
+    ++(Map) ${ prop((a: NonEmptyMap[Int,String], b: Map[Int,String]) => (a ++ b).toMap === (a.toMap ++ b)) }
+    toNEL consistent with .toList.toNEL ${ prop((a: NonEmptyMap[Int,String]) => a.toNEL === a.toList.toNel.get) }
+  }
   """
 }
 
 object NonEmptyMapSpec {
-  implicit def arbitraryNonEmptyMap[K:Arbitrary,V:Arbitrary]: Arbitrary[NonEmptyMap[K,V]] = Arbitrary {
-    val pair: Gen[(K,V)] = Arbitrary.arbitrary[(K,V)]
+  implicit def arbitraryNonEmptyMap[K: Arbitrary, V: Arbitrary]: Arbitrary[NonEmptyMap[K, V]] = Arbitrary {
+    val pair: Gen[(K, V)] = Arbitrary.arbitrary[(K, V)]
     for {
       first <- pair
       rest <- Gen.listOf(pair)
-    } yield rest.foldLeft(NonEmptyMap(first))( (l,kv) => l + kv )
+    } yield rest.foldLeft(NonEmptyMap(first))((l, kv) => l + kv)
   }
 }

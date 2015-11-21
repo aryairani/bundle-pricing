@@ -2,6 +2,7 @@ package bundlepricing.data
 
 import scalaz.Monoid
 
+/** A non-negative number of dollars. */
 case class Dollars(raw: BigDecimal) {
   require(raw >= 0)
 
@@ -14,6 +15,7 @@ case class Dollars(raw: BigDecimal) {
 object Dollars {
   def apply(i: Int): Dollars = Dollars(BigDecimal(i))
 
+  /** Convenience syntax for declaring a lot of prices */
   implicit class DollarsSyntax(d: Double) {
     def $ = Dollars(BigDecimal(d))
   }

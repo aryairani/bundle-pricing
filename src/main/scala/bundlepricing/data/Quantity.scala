@@ -4,7 +4,8 @@ import scalaz.Semigroup
 
 /** a positive number of items */
 case class Quantity(raw: Int) {
-  require (raw > 0)
+  require(raw > 0)
+
   def +(q: Quantity): Quantity = Quantity(raw + q.raw)
   def -(q: Quantity): Quantity = Quantity(raw - q.raw)
 
@@ -12,6 +13,7 @@ case class Quantity(raw: Int) {
 }
 
 object Quantity {
+
   /** convenience syntax for producing a quantity from an int */
   implicit class QuantitySyntax(q: Int) {
     def pc = Quantity(q)
