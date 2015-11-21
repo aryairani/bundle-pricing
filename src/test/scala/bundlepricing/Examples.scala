@@ -25,15 +25,9 @@ class Examples extends Specification with ScalaCheck { def is = s2"""
   val twoApples = Bundle(2.15 $, apple -> 2.pc)
   val breadButterCombo = Bundle.buyXgetYfree(buy = bread -> 1.pc, margarine -> 1.pc)(getFree = margarine -> 1.pc)
 
-  val d = Discounter(
-    products = NonEmptySet(apple, bread, margarine),
-    bundles = Set(twoApples, breadButterCombo)
-  )
+  val d = Discounter(Set(twoApples, breadButterCombo))
 
-  val noBundles = Discounter(
-    products = NonEmptySet(apple, bread, margarine),
-    bundles = Set()
-  )
+  val noBundles = Discounter(Set())
 
   def noBundlesNoDiscounts =
     prop((cart: NonEmptyMap[Item, Quantity]) => noBundles.total(cart) must_== undiscountedTotal(cart.toNEL))

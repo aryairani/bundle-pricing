@@ -8,11 +8,9 @@ import scala.annotation.tailrec
 import scalaz.std.iterable
 
 /**
-  * @param products no sense in offering discounts without products
   * @param bundles any available bundles
   */
-case class Discounter(products: NonEmptySet[Item], bundles: Set[Bundle]) {
-  require(products.map(_.id).size == products.size) // check for conflicting prices
+case class Discounter(bundles: Set[Bundle]) {
 
   /**
     * Apply the best combination of bundle savings to the cart
