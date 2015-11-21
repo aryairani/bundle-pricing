@@ -15,7 +15,7 @@ object Bundle {
   def buyXgetYfree(buy: NonEmptyMap[Item, Quantity], getFree: NonEmptyMap[Item, Quantity]): Bundle =
     Bundle(undiscountedTotal(buy.toNel), buy |+| getFree)
 
-  /** Convenience syntax for `buyXgetYfree` */
+  /** Define a "buy <X,...>, get <Y,...> free" bundle */
   def buyXgetYfree(buy: (Item, Quantity), andBuy: (Item, Quantity)*)
                   (getFree: (Item, Quantity), andGetFree: (Item, Quantity)*): Bundle =
     buyXgetYfree(NonEmptyMap(buy, andBuy: _*), NonEmptyMap(getFree, andGetFree: _*))

@@ -5,7 +5,6 @@ import bundlepricing.util.NonEmptySet
 import org.scalacheck.{Arbitrary, Gen}
 import org.specs2.{ScalaCheck, Specification}
 
-import scalaz.NonEmptyList
 import scalaz.scalacheck.ScalazProperties
 import scalaz.std.AllInstances._
 import scalaz.syntax.std.list._

@@ -1,6 +1,6 @@
 package bundlepricing.util
 
-import scalaz.{NonEmptyList, Foldable, Foldable1, Monad, Order, Semigroup}
+import scalaz.{Foldable1, Monad, NonEmptyList, Order, Semigroup}
 
 /** An immutable Set with at least one element */
 class NonEmptySet[A] private(raw: Set[A]) {
