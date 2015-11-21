@@ -37,7 +37,7 @@ class NonEmptySet[A] private(raw: Set[A]) {
 
   def toSet: Set[A] = raw
   def toList: List[A] = raw.toList
-  def toNEL: NonEmptyList[A] = NonEmptyList(raw.head, raw.tail.toSeq: _*)
+  def toNel: NonEmptyList[A] = NonEmptyList(raw.head, raw.tail.toSeq: _*)
 
   override def toString: String = raw.mkString("NonEmptySet(",",",")")
 }

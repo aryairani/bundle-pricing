@@ -77,7 +77,7 @@ case class Discounter(bundles: Set[Bundle]) {
     // start with a full cart and the undiscounted total and begin search
     loop(
       open = List(PartialResult(cart.toMap, relevantBundles.toList, Dollars(0))),
-      bestPrice = undiscountedTotal(cart.toNEL)
+      bestPrice = undiscountedTotal(cart.toNel)
     )
   }
 }

@@ -26,7 +26,7 @@ class NonEmptySetSpec extends Specification with ScalaCheck {
     }
     ++(NonEmptySet) ${ prop((a: NonEmptySet[Int], b: NonEmptySet[Int]) => (a ++ b).toSet === (a.toSet ++ b.toSet)) }
     ++(Set) ${ prop((a: NonEmptySet[Int], b: Set[Int]) => (a ++ b).toSet === (a.toSet ++ b)) }
-    toNEL consistent with .toList.toNEL ${ prop((a: NonEmptySet[Int]) => a.toNEL === a.toList.toNel.get) }
+    toNEL consistent with .toList.toNEL ${ prop((a: NonEmptySet[Int]) => a.toNel === a.toList.toNel.get) }
   """
 }
 

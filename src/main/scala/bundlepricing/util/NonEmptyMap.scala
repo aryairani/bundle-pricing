@@ -33,7 +33,7 @@ class NonEmptyMap[K,V] private(raw: Map[K,V]) {
 
   def toMap: Map[K, V] = raw
   def toList: List[(K, V)] = raw.toList
-  def toNEL: NonEmptyList[(K, V)] = (raw.toList: @unchecked) match {
+  def toNel: NonEmptyList[(K, V)] = (raw.toList: @unchecked) match {
     case head :: tail => NonEmptyList.nel(head, tail)
   }
 

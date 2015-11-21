@@ -24,12 +24,12 @@ class NonEmptyMapSpec extends Specification with ScalaCheck {
     }
     foldMap1 consistent with NonEmptyList ${
       prop((m: NonEmptyMap[Int,String]) =>
-        m.foldMap1(Vector(_)) === Foldable1[NonEmptyList].foldMap1(m.toNEL)(Vector(_))
+        m.foldMap1(Vector(_)) === Foldable1[NonEmptyList].foldMap1(m.toNel)(Vector(_))
       )
     }
     ++(NonEmptyMap) ${ prop((a: NonEmptyMap[Int,String], b: NonEmptyMap[Int,String]) => (a ++ b).toMap === (a.toMap ++ b.toMap)) }
     ++(Map) ${ prop((a: NonEmptyMap[Int,String], b: Map[Int,String]) => (a ++ b).toMap === (a.toMap ++ b)) }
-    toNEL consistent with .toList.toNEL ${ prop((a: NonEmptyMap[Int,String]) => a.toNEL === a.toList.toNel.get) }
+    toNEL consistent with .toList.toNEL ${ prop((a: NonEmptyMap[Int,String]) => a.toNel === a.toList.toNel.get) }
   }
   """
 }

@@ -33,7 +33,7 @@ class Examples extends Specification with ScalaCheck {
 
     no bundles means no discounts ${
       val noBundles = Discounter(Set())
-      prop((cart: NonEmptyMap[Item, Quantity]) => noBundles.total(cart) === undiscountedTotal(cart.toNEL))
+      prop((cart: NonEmptyMap[Item, Quantity]) => noBundles.total(cart) === undiscountedTotal(cart.toNel))
     }
   """
 
