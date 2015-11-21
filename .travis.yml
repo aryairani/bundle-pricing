@@ -1,7 +1,7 @@
 language: scala
 
 script:
-  - sbt clean coverage test
+  - sbt clean coverage test coverageReport
 
 after_success:
   - pip install --user codecov && codecov

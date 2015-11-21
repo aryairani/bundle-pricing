@@ -88,11 +88,6 @@ object Discounter {
   /** A partially-evaluated cart */
   private case class PartialResult(cartRemaining: Map[Item, Quantity], bundlesRemaining: List[Bundle], subtotal: Dollars)
 
-  private object PartialResult {
-    implicit val ordering: Ordering[PartialResult] =
-      implicitly[Ordering[Dollars]].on(_.subtotal)
-  }
-
   /** A pattern matcher for empty Map[Product, Quantity] map */
   private object EmptyCart {
     def unapply(m: Map[Item, Quantity]): Boolean = m.isEmpty

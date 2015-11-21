@@ -6,6 +6,7 @@ import scalaz.{Equal, NonEmptyList, Order, Semigroup}
 /** An immutable Map with at least one entry */
 class NonEmptyMap[K,V] private(raw: Map[K,V]) {
   def get(k: K): Option[V] = raw.get(k)
+  def size: Int = raw.size
 
   /** Remove an element from the map. Returns None if the removed element was the only one. */
   def -(k: K): Option[NonEmptyMap[K,V]] =
