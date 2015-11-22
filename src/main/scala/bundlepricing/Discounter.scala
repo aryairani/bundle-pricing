@@ -6,6 +6,9 @@ import bundlepricing.util.{NonEmptyMap, NonEmptySet, undiscountedTotal}
 
 import scala.annotation.tailrec
 import scalaz.std.iterable
+import scalaz.std.list._
+import scalaz.syntax.std.boolean._
+import scalaz.syntax.std.option._
 
 /**
   * @param bundles any available bundles
@@ -30,17 +33,16 @@ case class Discounter(bundles: Set[Bundle]) {
       }
 
     /** Remove bundle item quantities from a cart */
-    def applyBundle(cartRemaining: Map[Item, Quantity], bundle: Bundle): Map[Item, Quantity] = {
-      require(canApplyBundle(cartRemaining, bundle), "Don't call applyBundle when canApplyBundle is false.")
-
-      bundle.items.foldLeft(cartRemaining) {
-        case (cart, (product, quantity)) =>
-          if (cart(product) equiv quantity)
-            cart - product
-          else
-            cart.updated(product, cart(product) - quantity)
+    def applyBundle(cartRemaining: Map[Item, Quantity], bundle: Bundle): Option[Map[Item, Quantity]] =
+      canApplyBundle(cartRemaining, bundle).option {
+        bundle.items.foldLeft(cartRemaining) {
+          case (cart, (product, quantity)) =>
+            if (cart(product) equiv quantity)
+              cart - product
+            else
+              cart.updated(product, cart(product) - quantity)
+        }
       }
-    }
 
     /** try applying combinations of bundles until the lowest price combination is determined */
     @tailrec def loop(open: List[PartialResult], bestPrice: Dollars): Dollars = {
@@ -58,16 +60,19 @@ case class Discounter(bundles: Set[Bundle]) {
           loop(tail, bestPrice min (subtotal + undiscountedTotal(cartRemaining)(iterable.iterableSubtypeFoldable)))
 
         case PartialResult(cartRemaining, bundle :: moreBundles, subtotal) :: tail =>
-          def useBundleScenario = // apply this bundle and remove applicable items from the cart
-            PartialResult(applyBundle(cartRemaining, bundle), bundle :: moreBundles, subtotal + bundle.price)
+          // choice of applying this bundle to the cart or not
 
-          def ignoreBundleScenario = // don't apply this bundle
+          def useBundleScenario(reducedCart: Map[Item, Quantity]) = // represents applying the bundle
+            PartialResult(reducedCart, bundle :: moreBundles, subtotal + bundle.price)
+
+          def ignoreBundleScenario = // represents not applying the bundle
             PartialResult(cartRemaining, moreBundles, subtotal)
 
-          if (canApplyBundle(cartRemaining, bundle))
-            loop(useBundleScenario :: ignoreBundleScenario :: tail, bestPrice)
-          else
-            loop(ignoreBundleScenario :: tail, bestPrice)
+          loop(
+            // try applying the bundle if possible, not applying the bundle, and everything else we were going to try
+            open = applyBundle(cartRemaining, bundle).map(useBundleScenario).orEmpty[List] ++ (ignoreBundleScenario :: tail),
+            bestPrice = bestPrice
+          )
       }
     }
 

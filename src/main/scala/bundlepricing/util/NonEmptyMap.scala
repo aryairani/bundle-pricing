@@ -31,6 +31,9 @@ class NonEmptyMap[K,V] private(raw: Map[K,V]) {
   def foldMap1[B](f: ((K,V)) => B)(implicit B: Semigroup[B]): B =
     raw.tail.foldLeft(f(raw.head))((b, kv) => B.append(b, f(kv)))
 
+  def mapValues[C](f: V => C): NonEmptyMap[K, C] = new NonEmptyMap[K, C](raw.mapValues(f))
+  def values: NonEmptyList[V] = toNel.map(_._2)
+
   def toMap: Map[K, V] = raw
   def toList: List[(K, V)] = raw.toList
   def toNel: NonEmptyList[(K, V)] = (raw.toList: @unchecked) match {

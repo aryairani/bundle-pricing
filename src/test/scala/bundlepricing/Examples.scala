@@ -7,6 +7,7 @@ import bundlepricing.data.{Bundle, Dollars, Item, Quantity}
 import bundlepricing.util.{NonEmptyMap, undiscountedTotal}
 import org.scalacheck.{Arbitrary, Gen}
 import org.specs2.{ScalaCheck, Specification}
+import scalaz.syntax.foldable1._
 
 class Examples extends Specification with ScalaCheck {
 
@@ -14,6 +15,7 @@ class Examples extends Specification with ScalaCheck {
   val apple = Item("apple", 1.99 $)
   val bread = Item("bread", 2.45 $)
   val margarine = Item("margarine", 1.00 $)
+  def items = List(apple, bread, margarine)
 
   // some bundles
   val twoApples = Bundle(2.15 $, apple -> 2.pc)
@@ -35,12 +37,19 @@ class Examples extends Specification with ScalaCheck {
       val noBundles = Discounter(Set())
       prop((cart: NonEmptyMap[Item, Quantity]) => noBundles.total(cart) === undiscountedTotal(cart.toNel))
     }
+
+    if everything was on sale for a penny ${
+      val penny = 0.01 $
+      val bundles: Set[Bundle] = items.map(i => Bundle(penny, (i, 1.pc))).toSet
+      val pennySale = Discounter(bundles)
+      prop((cart: NonEmptyMap[Item, Quantity]) => pennySale.total(cart) === penny * cart.values.suml1)
+    }
   """
 
   /** convenience syntax for defining tests */
   def check(d: Discounter, first: (Item, Quantity), rest: (Item, Quantity)*): Dollars =
     d.total(NonEmptyMap(first, rest: _*))
 
-  implicit val arbItem: Arbitrary[Item] = Arbitrary(Gen.oneOf(apple, bread, margarine))
+  implicit val arbItem: Arbitrary[Item] = Arbitrary(Gen.oneOf(items))
   implicit val arbQuantity: Arbitrary[Quantity] = Arbitrary(Gen.posNum[Int].map(Quantity.apply))
 }
