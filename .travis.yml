@@ -5,3 +5,8 @@ script:
 
 after_success:
   - pip install --user codecov && codecov
+
+cache:
+  directories:
+    - $HOME/.ivy2/cache
+    - $HOME/.sbt
