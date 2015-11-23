@@ -38,9 +38,9 @@ class Examples extends Specification with ScalaCheck {
       prop((cart: NonEmptyMap[Item, Quantity]) => noBundles.total(cart) === undiscountedTotal(cart.toNel))
     }
 
-    if everything was on sale for a penny ${
+    if everything was on sale for a penny, n items would cost n cents ${
       val penny = 0.01 $
-      val bundles: Set[Bundle] = items.map(i => Bundle(penny, (i, 1.pc))).toSet
+      val bundles: Set[Bundle] = items.map(item => Bundle(penny, item -> 1.pc)).toSet
       val pennySale = Discounter(bundles)
       prop((cart: NonEmptyMap[Item, Quantity]) => pennySale.total(cart) === penny * cart.values.suml1)
     }
